@@ -9,10 +9,11 @@ let playlist;
 let services;
 
 test.serial('create services', t => {
-  services = [
-    new playlists.YouTubeService(process.env.GOOGLE_API_KEY),
-    // new playlists.SoundcloudService(process.env.SOUNDCLOUD_API_KEY)
-  ];
+  services = {
+    youtube: new playlists.YouTubeService(process.env.YOUTUBE_API_KEY),
+    soundcloud: new playlists.SoundcloudService(process.env.SOUNDCLOUD_API_KEY),
+    direct: new playlists.SoundcloudService(process.env.YOUTUBE_DL_PATH)
+  };
   return t.pass();
 });
 
@@ -21,14 +22,73 @@ test.serial('create playlist', t => {
   return t.pass();
 });
 
-test.serial('add youtube video URLs to playlist', t => {
-  // https://soundcloud.com/tom-stetson-905539972/sets/the-chill-pill
-  return playlist.add('https://www.youtube.com/watch?v=OVMuwa-HRCQ https://www.youtube.com/watch?v=MwSkC85TDgY https://www.youtube.com/playlist?list=PLF5C76212C58C464A', services)
-    .then(() => t.true(playlist.length > 100));
+test.serial('[youtube] add video URLs to playlist', async t => {
+  let service = [services.youtube];
+  const prevAmount = playlist.length;
+  await playlist.add('https://www.youtube.com/watch?v=OVMuwa-HRCQ https://www.youtube.com/watch?v=MwSkC85TDgY https://www.youtube.com/playlist?list=PLF5C76212C58C464A', service);
+  return t.true((playlist.length-prevAmount) > 100);
 });
 
-test.serial('add livestream to playlist', t => {
-  return playlist.add('https://www.youtube.com/watch?v=ueupsBPNkSc', services).then(() => t.pass());
+test.serial('[youtube] add livestream to playlist', t => {
+  let service = [services.youtube];
+  return playlist.add('https://www.youtube.com/watch?v=ueupsBPNkSc', service).then(() => t.pass());
+});
+
+test.serial('[youtube] get seek to time', t => {
+  let service = [services.youtube];
+  return playlist.add('https://youtu.be/OVMuwa-HRCQ?t=25', service).then((songs) => t.true(songs[0].seek === 25));
+});
+
+test.serial('[youtube] passes regex', t => {
+  return t.true(services.youtube.regex.test('https://youtu.be/OVMuwa-HRCQ?t=25'));
+});
+
+
+test.serial('[soundcloud] add song URLs to playlist', async t => {
+  let service = [services.soundcloud];
+  const prevAmount = playlist.length;
+  await playlist.add('https://soundcloud.com/user537958032/woke-from-dreaming https://soundcloud.com/tom-stetson-905539972/sets/the-chill-pill', service);
+  return t.true((playlist.length-prevAmount) > 100);
+});
+
+test.serial('[soundcloud] add likes page playlist', async t => {
+  let service = [services.soundcloud];
+  const prevAmount = playlist.length;
+  await playlist.add('https://soundcloud.com/user377137195/likes', service);
+  return t.true((playlist.length-prevAmount) > 100);
+});
+
+test.serial('[soundcloud] get seek to time', t => {
+  let service = [services.soundcloud];
+  return playlist.add('https://soundcloud.com/user537958032/woke-from-dreaming#t=1:41', service).then((songs) => t.true(songs[0].seek === 101));
+});
+
+test.serial('[soundcloud] passes regex', t => {
+  return t.true(services.soundcloud.regex.test('https://soundcloud.com/user377137195/likes')
+             && services.soundcloud.regex.test('https://soundcloud.com/user537958032/woke-from-dreaming')
+             && services.soundcloud.regex.test('https://soundcloud.com/tom-stetson-905539972/sets/the-chill-pill'));
+});
+
+test.serial('[direct] add music URLs to playlist', async t => {
+  let service = [services.direct];
+  const prevAmount = playlist.length;
+  await playlist.add('https://upload.wikimedia.org/wikipedia/commons/a/a2/Du_gamla%2C_du_fria.ogg', service);
+  return t.true((playlist.length-prevAmount) > 0);
+});
+
+test.serial('[direct] add radio stream', async t => {
+  let service = [services.direct];
+  await playlist.add('https://listen.moe/stream', service);
+  return t.pass();
+});
+
+test.serial('[direct] get seek to time', t => {
+  let service = [services.direct];
+  return playlist.add('https://upload.wikimedia.org/wikipedia/commons/a/a2/Du_gamla%2C_du_fria.ogg#t=25', service).then((songs) => t.true(songs[0].seek === 25));
+});
+
+test.serial('[direct] passes regex', t => {
+  return t.true(services.direct.regex.test('https://upload.wikimedia.org/wikipedia/commons/a/a2/Du_gamla%2C_du_fria.ogg#t=25'));
 });
 
 test.serial('shuffles', t => {

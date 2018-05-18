@@ -6,4 +6,5 @@ export interface IService {
   search: boolean;
   fetch(fetchable: IFetchable, searchType: SearchType): Promise<Song[]>;
   fetchable(content: string): IFetchable;
+  getSongInfo(songUrl: string): Promise<any>;
 }

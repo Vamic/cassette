@@ -9,6 +9,8 @@ import YouTubeSong from './Song';
 export default class YouTubeService implements IService {
   public readonly api: API;
   public search: boolean = true;
+  public regex: RegExp = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/i;
+  public type: string = 'youtube';
 
   constructor(key: string) {
     this.api = new API(key);
@@ -25,8 +27,10 @@ export default class YouTubeService implements IService {
     }
 
     for (const song of fetchable.songs) {
-      const video = await this.api.getVideoByID(song);
-      if (video) fetched.push(new YouTubeSong(this, video));
+      const parsed = API.util.parseURL(song);
+      const video = await this.api.getVideoByID(parsed.video);
+      const seek = YouTubeSong.extractSeek(song);
+      if (video) fetched.push(new YouTubeSong(this, video, undefined, seek));
     }
 
     if (this.search) {
@@ -59,12 +63,13 @@ export default class YouTubeService implements IService {
 
     for (const elem of words) {
       const parsed = API.util.parseURL(elem);
+      
       if (!parsed) {
         query.push(elem);
-      } else if (parsed.type === 'video') {
-        fetchable.songs.push(parsed.id);
-      } else if (parsed.type === 'playlist') {
-        fetchable.playlists.push(parsed.id);
+      } else if (parsed.video) {
+        fetchable.songs.push(elem);
+      } else if (parsed.playlist) {
+        fetchable.playlists.push(parsed.playlist);
       }
     }
 
@@ -72,5 +77,21 @@ export default class YouTubeService implements IService {
     if (joined.length) fetchable.queries.push(joined);
 
     return fetchable;
+  }
+
+  public async getSongInfo (url: string): Promise<any> {
+    ytdl.getInfo(url, { filter: "audioonly" }, function (err, info) {
+        if (err) throw err;
+        else {
+            return {
+                metadataType: "youtube",
+                imgURL: info.thumbnail_url,
+                title: info.title,
+                duration: info.length_seconds,
+                url: info.video_url,
+                icon: "https://cdn1.iconfinder.com/data/icons/logotypes/32/youtube-256.png"
+            }
+        }
+    });
   }
 }

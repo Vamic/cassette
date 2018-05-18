@@ -10,6 +10,9 @@ import YouTubeSong from './external/youtube/Song';
 import SoundcloudService from './external/soundcloud/Service';
 import SoundcloudSong from './external/soundcloud/Song';
 
+import DirectService from './external/direct/Service';
+import DirectSong from './external/direct/Song';
+
 export {
   Playlist,
   Song,
@@ -19,4 +22,7 @@ export {
 
   SoundcloudService,
   SoundcloudSong,
+  
+  DirectService,
+  DirectSong,
 };

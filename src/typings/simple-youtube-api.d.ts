@@ -60,8 +60,9 @@ declare module 'simple-youtube-api' {
 
     interface IUtil {
       parseURL: (url: string) => {
-        type: 'video' | 'playlist';
-        id: string;
+        video: string,
+        playlist: string,
+        channel: string
       }
     }
   }
