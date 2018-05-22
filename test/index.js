@@ -34,6 +34,11 @@ test.serial('[youtube] add livestream to playlist', t => {
   return playlist.add('https://www.youtube.com/watch?v=ueupsBPNkSc', service).then(() => t.pass());
 });
 
+test.serial('[youtube] add search to playlist', t => {
+  let service = [services.youtube];
+  return playlist.add('globgogabgalab', service).then((songs) => t.true(songs.length > 0));
+});
+
 test.serial('[youtube] get seek to time', t => {
   let service = [services.youtube];
   return playlist.add('https://youtu.be/OVMuwa-HRCQ?t=25', service).then((songs) => t.true(songs[0].seek === 25));

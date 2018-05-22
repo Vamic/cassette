@@ -64,12 +64,12 @@ export default class YouTubeService implements IService {
     for (const elem of words) {
       const parsed = API.util.parseURL(elem);
       
-      if (!parsed) {
-        query.push(elem);
-      } else if (parsed.video) {
+      if (parsed.video) {
         fetchable.songs.push(elem);
       } else if (parsed.playlist) {
         fetchable.playlists.push(parsed.playlist);
+      } else if (!parsed.channel) {
+        query.push(elem);
       }
     }
 
