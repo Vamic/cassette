@@ -22,6 +22,7 @@ export default class SoundcloudService implements IService {
     try {
       await this.request.get('/resolve', {
         params: { url: inputUrl },
+        maxRedirects: 0
       })
       return url.parse(inputUrl);
     } catch (err) {
@@ -40,9 +41,7 @@ export default class SoundcloudService implements IService {
 
   constructor(key: string) {
     this.request = axios.create({
-      baseURL: 'https://api.soundcloud.com',
-      maxRedirects: 0,
-      
+      baseURL: 'https://api.soundcloud.com',      
       params: {
         client_id: key,
       },
