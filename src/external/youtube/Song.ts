@@ -4,6 +4,7 @@ import ytdl = require('ytdl-core');
 
 import Song from '../../core/Song';
 import YouTubeService from './Service';
+import { SongInfo } from '../../typings/SongMetaData';
 
 export default class YouTubeSong extends Song {
   public readonly type: string = 'youtube';
@@ -11,6 +12,8 @@ export default class YouTubeSong extends Song {
   public readonly playlistID?: string;
   public readonly trackID: string;
   public readonly streamURL: string;
+  public readonly URL: string;
+  public info: SongInfo;
   public seek: number;
 
   constructor(service: YouTubeService, video: API.Video, playlistID?: string, seek: number = 0) {
@@ -18,12 +21,20 @@ export default class YouTubeSong extends Song {
     this.title = video.title;
     this.trackID = video.id;
     this.streamURL = video.url;
+    this.URL = video.url;
     this.playlistID = playlistID;
     this.seek = seek;
+    this.info = {
+      metadataType: this.type,
+      title: this.title,
+      url: this.URL,
+      duration: video.durationSeconds
+    }
   }
 
-  public async getSongInfo(): Promise<any> {
-    return this.service.getSongInfo(this.streamURL);
+  public async getSongInfo(): Promise<SongInfo> {
+    this.info = await this.service.getSongInfo(this.URL);
+    return this.info;
   }
     
   public static extractSeek(url: string): number {

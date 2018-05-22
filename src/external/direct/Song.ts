@@ -4,6 +4,7 @@ import Song from '../../core/Song';
 import DirectService from './Service';
 
 import { spawn } from "child_process";
+import { SongInfo } from '../../typings/SongMetaData';
 
 export default class DirectSong extends Song {
   public readonly type: string = 'direct';
@@ -11,7 +12,9 @@ export default class DirectSong extends Song {
   public readonly playlistID?: string;
   public readonly trackID: string;
   public readonly streamURL: string;
+  public readonly URL: string;
   public readonly youtube_dl_path: string;
+  public info: SongInfo;
   public seek: number;
 
   constructor(service: DirectService, url: string, id: string) {
@@ -19,12 +22,19 @@ export default class DirectSong extends Song {
     this.title = url.split("/").slice(-1)[0];
     this.trackID = id;
     this.streamURL = url;
+    this.URL = url;
     this.seek = this.extractSeek(url);
     this.youtube_dl_path = service.youtube_dl_path;
+    this.info = {
+      metadataType: this.type,
+      url: this.URL,
+      duration: 0
+    }
   }
   
-  public async getSongInfo(): Promise<any> {
-    return this.service.getSongInfo(this.streamURL);
+  public async getSongInfo(): Promise<SongInfo> {
+    this.info = await this.service.getSongInfo(this.URL);
+    return this.info;
   }
   
   public extractSeek(url: string): number {

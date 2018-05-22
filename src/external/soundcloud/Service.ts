@@ -3,6 +3,7 @@ import url = require('url');
 
 import { SearchType } from '../../core/Playlist';
 import SoundcloudSong from './Song';
+import { SongInfo } from '../../typings/SongMetaData';
 
 import { IFetchable } from '../../interfaces/IFetchable';
 import { IService } from '../../interfaces/IService';
@@ -137,20 +138,18 @@ export default class SoundcloudService implements IService {
     return fetchable;
   }
 
-  public async getSongInfo (url: string): Promise<any> {
-    if (!SoundcloudService.isViewURL(url)) throw new Error("Non Soundcloud view url provided");
+  public async getSongInfo (url: string): Promise<SongInfo> {
     var fullresource: url.Url = await this.getFullResourceUrl(url);
     if (!fullresource.pathname || !fullresource.hostname) throw new Error("Invalid url resource");
     
     let result = await this.request.get(fullresource.pathname);
     return {
-      metadataType: "soundcloud",
+      metadataType: this.type,
       imgURL: result.data.artwork_url,
       title: result.data.title,
-      duration: result.data.duration / 1000,
+      duration: Math.floor(result.data.duration / 1000),
       url: result.data.permalink_url,
-      genre: [result.data.genre],
-      icon: "https://cdn2.iconfinder.com/data/icons/social-icon-3/512/social_style_3_soundCloud-128.png"
-  };
+      genre: [result.data.genre]
+    };
   };
 }

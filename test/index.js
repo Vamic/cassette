@@ -22,11 +22,10 @@ test.serial('create playlist', t => {
   return t.pass();
 });
 
-test.serial('[youtube] add video URLs to playlist', async t => {
+test.serial('[youtube] add video URLs to playlist', t => {
   let service = [services.youtube];
   const prevAmount = playlist.length;
-  await playlist.add('https://www.youtube.com/watch?v=OVMuwa-HRCQ https://www.youtube.com/watch?v=MwSkC85TDgY https://www.youtube.com/playlist?list=PLF5C76212C58C464A', service);
-  return t.true((playlist.length-prevAmount) > 100);
+  return playlist.add('https://www.youtube.com/watch?v=OVMuwa-HRCQ https://www.youtube.com/watch?v=MwSkC85TDgY https://www.youtube.com/playlist?list=PLF5C76212C58C464A', service).then(songs => t.true(songs.length > 100));
 });
 
 test.serial('[youtube] add livestream to playlist', t => {
@@ -49,19 +48,25 @@ test.serial('[youtube] passes regex', t => {
   t.true(services.youtube.regex.test('https://www.youtube.com/playlist?list=PLF5C76212C58C464A'));
 });
 
-
-test.serial('[soundcloud] add song URLs to playlist', async t => {
-  let service = [services.soundcloud];
-  const prevAmount = playlist.length;
-  await playlist.add('https://soundcloud.com/user537958032/woke-from-dreaming https://soundcloud.com/tom-stetson-905539972/sets/the-chill-pill', service);
-  t.true((playlist.length-prevAmount) > 100);
+test.serial('[youtube] gets song info', t => {
+  const expected = {
+    duration: 220,
+    imgURL: 'https://i.ytimg.com/vi/OVMuwa-HRCQ/default.jpg',
+    metadataType: 'youtube',
+    title: '[Drumstep] - Tristam & Braken - Flight [Monstercat Release]',
+    url: 'https://www.youtube.com/watch?v=OVMuwa-HRCQ',
+  }
+  return services.youtube.getSongInfo('https://youtu.be/OVMuwa-HRCQ?t=25').then(info => t.deepEqual(info, expected));
 });
 
-test.serial('[soundcloud] add likes page playlist', async t => {
+test.serial('[soundcloud] add song URLs to playlist', t => {
   let service = [services.soundcloud];
-  const prevAmount = playlist.length;
-  await playlist.add('https://soundcloud.com/user377137195/likes', service);
-  return t.true((playlist.length-prevAmount) > 100);
+  return playlist.add('https://soundcloud.com/user537958032/woke-from-dreaming https://soundcloud.com/tom-stetson-905539972/sets/the-chill-pill', service).then(songs => t.true(songs.length > 100));
+});
+
+test.serial('[soundcloud] add likes page playlist', t => {
+  let service = [services.soundcloud];
+  return playlist.add('https://soundcloud.com/user377137195/likes', service).then(songs => t.true(songs.length > 100));
 });
 
 test.serial('[soundcloud] get seek to time', t => {
@@ -75,17 +80,27 @@ test.serial('[soundcloud] passes regex', t => {
              && services.soundcloud.regex.test('https://soundcloud.com/tom-stetson-905539972/sets/the-chill-pill'));
 });
 
-test.serial('[direct] add music URLs to playlist', async t => {
-  let service = [services.direct];
-  const prevAmount = playlist.length;
-  await playlist.add('https://upload.wikimedia.org/wikipedia/commons/a/a2/Du_gamla%2C_du_fria.ogg', service);
-  return t.true((playlist.length-prevAmount) > 0);
+test.serial('[soundcloud] gets song info', t => {
+  const expected = {
+    duration: 179,
+    imgURL: 'https://i1.sndcdn.com/artworks-000083218011-5d5byc-large.jpg',
+    genre: ['Anime'],
+    metadataType: 'soundcloud',
+    title: 'Ping Pong Animation Opening Full',
+    url: 'https://soundcloud.com/stefano-ohaeri/ping-pong-animation-opening',
+  }
+  return services.soundcloud.getSongInfo('https://soundcloud.com/stefano-ohaeri/ping-pong-animation-opening').then(info => t.deepEqual(info, expected));
 });
 
-test.serial('[direct] add radio stream', async t => {
+test.serial('[direct] add music URLs to playlist', t => {
   let service = [services.direct];
-  await playlist.add('https://listen.moe/stream', service);
-  return t.pass();
+  const prevAmount = playlist.length;
+  return playlist.add('https://upload.wikimedia.org/wikipedia/commons/a/a2/Du_gamla%2C_du_fria.ogg', service).then(songs => t.true(songs.length > 0));
+});
+
+test.serial('[direct] add radio stream', t => {
+  let service = [services.direct];
+  return playlist.add('https://listen.moe/stream', service).then(t.pass());
 });
 
 test.serial('[direct] get seek to time', t => {

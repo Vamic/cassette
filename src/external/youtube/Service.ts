@@ -4,6 +4,7 @@ import ytdl = require('ytdl-core');
 import { SearchType } from '../../core/Playlist';
 import { IFetchable } from '../../interfaces/IFetchable';
 import { IService } from '../../interfaces/IService';
+import { SongInfo } from '../../typings/SongMetaData';
 import YouTubeSong from './Song';
 
 export default class YouTubeService implements IService {
@@ -79,19 +80,14 @@ export default class YouTubeService implements IService {
     return fetchable;
   }
 
-  public async getSongInfo (url: string): Promise<any> {
-    ytdl.getInfo(url, { filter: "audioonly" }, function (err, info) {
-        if (err) throw err;
-        else {
-            return {
-                metadataType: "youtube",
-                imgURL: info.thumbnail_url,
-                title: info.title,
-                duration: info.length_seconds,
-                url: info.video_url,
-                icon: "https://cdn1.iconfinder.com/data/icons/logotypes/32/youtube-256.png"
-            }
-        }
-    });
+  public async getSongInfo (url: string): Promise<SongInfo> {
+    const result: ytdl.videoInfo = await ytdl.getInfo(url, { filter: "audioonly" });
+    return {
+        metadataType: "youtube",
+        imgURL: result.thumbnail_url,
+        title: result.title,
+        duration: Number(result.length_seconds),
+        url: result.video_url
+    };
   }
 }

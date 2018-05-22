@@ -1,5 +1,6 @@
 import { Readable as ReadableStream } from 'stream';
 import { IService } from '../interfaces/IService';
+import { SongInfo } from '../typings/SongMetaData';
 
 export default abstract class Song {
   public readonly service: IService;
@@ -10,6 +11,8 @@ export default abstract class Song {
   public abstract readonly trackID: string | number;
   public abstract readonly playlistID?: string | number;
   public abstract readonly streamURL: string;
+  public abstract readonly URL: string;
+  public abstract info?: SongInfo;
 
   constructor(service: IService) {
     this.service = service;
