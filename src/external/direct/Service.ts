@@ -11,7 +11,7 @@ import * as https from "https";
 
 export default class DirectService implements IService {
   public search: boolean = false;
-  public regex: RegExp = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/g);
+  public regex: RegExp = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/);
   public readonly type: string = 'direct';
   public readonly youtube_dl_path: string;
 

@@ -12,6 +12,7 @@ export default abstract class Song {
   public abstract readonly streamURL: string;
 
   constructor(service: IService) {
+    this.service = service;
     Object.defineProperty(this, 'service', { value: service });
   }
 

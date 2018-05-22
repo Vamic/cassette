@@ -9,7 +9,7 @@ import YouTubeSong from './Song';
 export default class YouTubeService implements IService {
   public readonly api: API;
   public search: boolean = true;
-  public regex: RegExp = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/i;
+  public regex: RegExp = /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/i;
   public type: string = 'youtube';
 
   constructor(key: string) {

@@ -12,7 +12,7 @@ test.serial('create services', t => {
   services = {
     youtube: new playlists.YouTubeService(process.env.YOUTUBE_API_KEY),
     soundcloud: new playlists.SoundcloudService(process.env.SOUNDCLOUD_API_KEY),
-    direct: new playlists.SoundcloudService(process.env.YOUTUBE_DL_PATH)
+    direct: new playlists.DirectService(process.env.YOUTUBE_DL_PATH)
   };
   return t.pass();
 });
@@ -40,7 +40,8 @@ test.serial('[youtube] get seek to time', t => {
 });
 
 test.serial('[youtube] passes regex', t => {
-  return t.true(services.youtube.regex.test('https://youtu.be/OVMuwa-HRCQ?t=25'));
+  t.true(services.youtube.regex.test('https://youtu.be/OVMuwa-HRCQ?t=25'));
+  t.true(services.youtube.regex.test('https://www.youtube.com/playlist?list=PLF5C76212C58C464A'));
 });
 
 
@@ -48,7 +49,7 @@ test.serial('[soundcloud] add song URLs to playlist', async t => {
   let service = [services.soundcloud];
   const prevAmount = playlist.length;
   await playlist.add('https://soundcloud.com/user537958032/woke-from-dreaming https://soundcloud.com/tom-stetson-905539972/sets/the-chill-pill', service);
-  return t.true((playlist.length-prevAmount) > 100);
+  t.true((playlist.length-prevAmount) > 100);
 });
 
 test.serial('[soundcloud] add likes page playlist', async t => {
