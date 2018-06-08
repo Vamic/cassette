@@ -1,5 +1,5 @@
 import { Readable as ReadableStream } from 'stream';
-import API = require('simple-youtube-api');
+import { Video } from 'simple-youtube-api';
 import ytdl = require('ytdl-core');
 
 import Song from '../../core/Song';
@@ -13,16 +13,18 @@ export default class YouTubeSong extends Song {
   public readonly trackID: string;
   public readonly streamURL: string;
   public readonly URL: string;
+  public readonly live: boolean;
   public info: SongInfo;
   public seek: number;
 
-  constructor(service: YouTubeService, video: API.Video, playlistID?: string, seek: number = 0) {
+  constructor(service: YouTubeService, video: Video, playlistID?: string, seek: number = 0) {
     super(service);
     this.title = video.title;
     this.trackID = video.id;
     this.streamURL = video.url;
     this.URL = video.url;
     this.playlistID = playlistID;
+    this.live = video.raw.snippet.liveBroadcastContent == "live";
     this.seek = seek;
     this.info = {
       metadataType: this.type,
@@ -58,10 +60,13 @@ export default class YouTubeSong extends Song {
   }
 
   public stream(): ReadableStream {
-    return ytdl(this.streamURL, {
-      filter: 'audioonly',
-      quality: 'lowest',
-    });
+    const options: any = {};
+    if(this.live) {
+        options.quality = ['91', '92', '93', '94', '95'];
+    } else {
+        options.filter = 'audioonly';
+    }
+    return ytdl(this.trackID, options);
   }
 
   public async next(): Promise<null> {

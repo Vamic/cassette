@@ -30,7 +30,7 @@ test.serial('[youtube] add video URLs to playlist', t => {
 
 test.serial('[youtube] add livestream to playlist', t => {
   let service = [services.youtube];
-  return playlist.add('https://www.youtube.com/watch?v=ueupsBPNkSc', service).then(() => t.pass());
+  return playlist.add('https://www.youtube.com/watch?v=ueupsBPNkSc', service).then((songs) => t.true(songs.length && songs[0].live));
 });
 
 test.serial('[youtube] add search to playlist', t => {
