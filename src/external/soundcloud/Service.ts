@@ -144,6 +144,7 @@ export default class SoundcloudService implements IService {
     
     let result = await this.request.get(fullresource.pathname);
     return {
+      full: true,
       metadataType: this.type,
       imgURL: result.data.artwork_url,
       title: result.data.title,

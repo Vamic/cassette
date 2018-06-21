@@ -26,6 +26,7 @@ export default class DirectSong extends Song {
     this.seek = this.extractSeek(url);
     this.youtube_dl_path = service.youtube_dl_path;
     this.info = {
+      full: false,
       metadataType: this.type,
       url: this.URL,
       duration: 0
@@ -33,6 +34,7 @@ export default class DirectSong extends Song {
   }
   
   public async getSongInfo(): Promise<SongInfo> {
+    if (this.info.full) return this.info;
     this.info = await this.service.getSongInfo(this.URL);
     return this.info;
   }

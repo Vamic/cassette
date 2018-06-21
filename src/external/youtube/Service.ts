@@ -83,6 +83,7 @@ export default class YouTubeService implements IService {
   public async getSongInfo (url: string): Promise<SongInfo> {
     const result: ytdl.videoInfo = await ytdl.getInfo(url, { filter: "audioonly" });
     return {
+        full: true,
         metadataType: "youtube",
         imgURL: result.thumbnail_url,
         title: result.title,

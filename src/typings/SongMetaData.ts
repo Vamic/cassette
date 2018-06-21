@@ -1,4 +1,5 @@
 export type SongInfo = {
+    full: boolean
     metadataType: string
     url: string
     title?: string

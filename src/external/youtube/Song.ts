@@ -25,6 +25,7 @@ export default class YouTubeSong extends Song {
     this.playlistID = playlistID;
     this.seek = seek;
     this.info = {
+      full: false,
       metadataType: this.type,
       title: this.title,
       url: this.URL,
@@ -33,6 +34,7 @@ export default class YouTubeSong extends Song {
   }
 
   public async getSongInfo(): Promise<SongInfo> {
+    if (this.info.full) return this.info;
     this.info = await this.service.getSongInfo(this.URL);
     return this.info;
   }

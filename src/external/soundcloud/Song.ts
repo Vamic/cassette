@@ -24,6 +24,7 @@ export default class SoundcloudSong extends Song {
     this.playlistID = playlistID;
     this.seek = seek;
     this.info = {
+      full: true,
       metadataType: this.type,
       url: this.URL,
       title: this.title,
@@ -34,6 +35,7 @@ export default class SoundcloudSong extends Song {
   }
   
   public async getSongInfo(): Promise<SongInfo> {
+    if (this.info.full) return this.info;
     this.info = await this.service.getSongInfo(this.URL);
     return this.info;
   }

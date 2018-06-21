@@ -89,6 +89,7 @@ export default class DirectService implements IService {
               var real_request = https.get(options, function (response: Readable) {
                   MusicMetaData(response, function (err: Error, data: MM.Metadata) {
                     const info: SongInfo = {
+                      full: true,
                       metadataType: "ID3",
                       title: data.title,
                       duration: 0,
