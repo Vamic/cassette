@@ -48,6 +48,7 @@ declare module 'simple-youtube-api' {
       abstract type: string;
       public id: string;
       public title: string;
+      public raw: any;
       static extractID(url: string): string | null;
     }
 
